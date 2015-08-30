@@ -1,31 +1,35 @@
 module ShortestPath
 where
-import Data.PSQueue
+import Data.PSQueue (PSQ, adjust, fromList, Binding((:->)), minView)
 
 data Graph k w = Graph [(k,[(k,w)])]
-data Path k w = Path [(k,w)] deriving (Eq,Show)
+data Step k w = Step k w k deriving (Eq,Show)
+data Path k w = Path [Step k w] deriving (Eq,Show)
 
-type Distances k w = PSQ k w
+type Dists k w = PSQ k w
 
-shortestPath :: (Num w,Ord k) => Graph k w -> k -> k -> Path k w
-shortestPath (Graph g) f t | f == t    = Path [(f,0)]
-                   | otherwise = case Prelude.lookup f g >>= Prelude.lookup t of
-                        Just n -> Path [(t,n)]
+shortestPath :: (Num w,Ord k, Ord w) => Graph k w -> k -> k -> Path k w
+shortestPath g f t =
+    let ds = initialDistances g f
+        loop g (ds,p@(Path (Step x _ _:ns))) | x == t = (ds,p)
+        loop g r = loop g $ shortestPathStep g r
+        (_,Path p) = loop g (ds, Path []) 
+    in Path $ reverse p 
 
-initialDistances :: (Ord k, Num w,Ord w) => Graph k w -> k -> PSQ k w
+initialDistances :: (Ord k, Num w,Ord w) => Graph k w -> k -> Dists k w
 initialDistances (Graph g) k = adjust (const 0) k (fromList (map (\(n,_) -> n :-> 10000000) g))
 
-updateDistance :: (Ord k, Ord w) => PSQ k w  -> k -> w -> PSQ k w
+updateDistance :: (Ord k, Ord w) => Dists k w  -> k -> w -> Dists k w
 updateDistance ds k w = adjust (min w) k ds
 
-shortestPathStep :: (Ord w, Num w, Ord k) => Graph k w -> (PSQ k w, Path k w) -> (PSQ k w, Path k w) 
+shortestPathStep :: (Ord w, Num w, Ord k) => Graph k w -> (Dists k w, Path k w) -> (Dists k w, Path k w) 
 shortestPathStep (Graph g) (ds,Path p) = case minView ds of
     Nothing -> (ds,Path p)
-    Just (k :-> w, ds') -> let adj = Prelude.lookup k g
+    Just (k :-> w, ds') -> let adj = lookup k g
                                update ds (n,d) = updateDistance ds n (w+d)
                                ds''= case adj of
-                                   Just ks -> Prelude.foldl update ds' ks
+                                   Just ks -> foldl update ds' ks
                                    Nothing -> ds'
-                           in (ds'', Path (p++[(k,w)])) 
+                           in (ds'', Path (Step k w k:p)) 
 
                             

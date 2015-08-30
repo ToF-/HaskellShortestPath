@@ -13,7 +13,10 @@ main = hspec $ do
             shortestPath rs Clacton Clacton `shouldBe` Path [(Clacton,0)] 
 
         it "from a node to a connected node is the weigh" $ do
-            shortestPath rs Blaxhall Dunwich `shouldBe` Path [(Dunwich,15)]
+            shortestPath rs Blaxhall Dunwich `shouldBe` Path [(Blaxhall,0),(Dunwich,15)]
+
+        it "for a whole graph is the shortest path" $ do
+            shortestPath rs Blaxhall Tiptree `shouldBe` Path [(Blaxhall,0),(Feering,46),(Tiptree,49)]
 
     describe "initial distances" $ do
         it "from a node yields all infinity except node" $ do
@@ -56,16 +59,9 @@ main = hspec $ do
             let ds = initialDistances rs Blaxhall
                 (ds',p) = shortestPathStep rs (ds,Path [])
                 (ds'',p') = shortestPathStep rs (ds',p)
-            p'  `shouldBe`Path [(Blaxhall,0),(Dunwich,15)]
+            p'  `shouldBe`Path [(Dunwich,15),(Blaxhall,0)]
         it "update the result for steps" $ do
             let ds = initialDistances rs Blaxhall
                 step = shortestPathStep rs
                 (_,p) = step (step (step (step (step (step (step (ds,Path [])))))))
-            p `shouldBe`Path  [(Blaxhall,0)
-                         ,(Dunwich,15)
-                         ,(Harwich,40)
-                         ,(Feering,46)
-                         ,(Tiptree,49)
-                         ,(Clacton,57)
-                         ,(Maldon,57)]   
-
+            p `shouldBe` Path [(Maldon,57),(Clacton,57),(Tiptree,49),(Feering,46),(Harwich,40),(Dunwich,15),(Blaxhall,0)]
