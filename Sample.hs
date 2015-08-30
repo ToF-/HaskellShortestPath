@@ -1,3 +1,6 @@
+module Sample
+where
+
 data City = Blaxhall|Clacton|Dunwich|Feering|Harwich|Maldon|Tiptree
     deriving (Show,Eq,Ord,Enum)
 
