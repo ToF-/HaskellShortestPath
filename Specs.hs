@@ -58,6 +58,11 @@ main = hspec $ do
             let ds = initialDistances roads Blaxhall
                 step = shortestPathStep roads
                 (_,p) = step (step (step (step (step (step (step (ds,[])))))))
-            p `shouldBe`[(Blaxhall,0),(Dunwich,15)]
-    
+            p `shouldBe` [(Blaxhall,0)
+                         ,(Dunwich,15)
+                         ,(Harwich,40)
+                         ,(Feering,46)
+                         ,(Tiptree,49)
+                         ,(Clacton,57)
+                         ,(Maldon,57)]   
 
