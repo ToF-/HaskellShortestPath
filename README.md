@@ -1,0 +1,2 @@
+# HaskellShortestPath
+exploring Djiskstra algorithm
