@@ -22,5 +22,42 @@ main = hspec $ do
                 ,Harwich :-> 10000000
                 ,Maldon :-> 10000000
                 ,Tiptree :-> 10000000]
+
+    describe "update distance" $ do
+        it "update the distance table for a node if lower" $ do
+            let ds = initialDistances roads Blaxhall 
+            toList (updateDistance ds Dunwich 15)  `shouldBe` 
+                [Blaxhall :-> 0
+                ,Clacton :-> 10000000
+                ,Dunwich :-> 15
+                ,Feering :-> 10000000
+                ,Harwich :-> 10000000
+                ,Maldon  :-> 10000000
+                ,Tiptree :-> 10000000]
+        it "doesn't update the distance table for a node if higher" $ do
+            let ds = initialDistances roads Blaxhall 
+            toList (updateDistance ds Blaxhall 15)  `shouldBe` 
+                [Blaxhall :-> 0
+                ,Clacton :-> 10000000
+                ,Dunwich :-> 10000000
+                ,Feering :-> 10000000
+                ,Harwich :-> 10000000
+                ,Maldon  :-> 10000000
+                ,Tiptree :-> 10000000]
+    describe "shortestPathStep" $ do
+        it "update the result for a step" $ do
+            let ds = initialDistances roads Blaxhall
+                (ds',p) = shortestPathStep roads (ds,[])
+            p  `shouldBe` [(Blaxhall,0)]        
+        it "update the result for steps" $ do
+            let ds = initialDistances roads Blaxhall
+                (ds',p) = shortestPathStep roads (ds,[])
+                (ds'',p') = shortestPathStep roads (ds',p)
+            p'  `shouldBe`[(Blaxhall,0),(Dunwich,15)]
+        it "update the result for steps" $ do
+            let ds = initialDistances roads Blaxhall
+                step = shortestPathStep roads
+                (_,p) = step (step (step (step (step (step (step (ds,[])))))))
+            p `shouldBe`[(Blaxhall,0),(Dunwich,15)]
     
 
