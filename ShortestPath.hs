@@ -12,8 +12,8 @@ shortestPath g a z = case lookup a g >>= lookup z of
     Nothing -> []
     Just w  -> [(z,(w,a))]
 
-distances :: (Ord k, Ord w, Num w) => Graph k w -> k -> Dists k w
-distances g k = initial g k
+distances :: (Ord k, Ord w, Num w) => Graph k w -> k -> (Dists k w, Path k w) -> (Dists k w, Path k w)
+distances g k (_,[]) = (initial g k, [])
 
 initial :: (Ord k, Ord w, Num w) => Graph k w -> k -> Dists k w
 initial g k = adjust (const (0,k)) k
