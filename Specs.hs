@@ -15,3 +15,8 @@ main = hspec $ do
         it "form a node to a neighbor is the weight of the edge" $ do
             shortestPath rs Blaxhall Dunwich
                 `shouldBe` [(Dunwich,(15,Blaxhall))]
+
+    describe "distances" $ do
+        it "from a node to itself is 0" $ do
+            head (toList (distances rs Blaxhall))
+                 `shouldBe` (Blaxhall :-> (0,Blaxhall))
