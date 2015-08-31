@@ -19,13 +19,47 @@ main = hspec $ do
 
     describe "distances" $ do
         it "from start node to itself is 0" $ do
-            let (dists,_) = distances rs Blaxhall (empty,[])
+            let (dists,_) = (initial rs Blaxhall, [])
             head (toList dists) `shouldBe` (Blaxhall :-> (0,Blaxhall))
 
-        -- it "from start node to neighbors is weight" $ do
-        --     (take 4 . sort . toList) (distances rs Blaxhall)
-        --          `shouldBe` [(Blaxhall :-> (0, Blaxhall))
-        --                     ,(Dunwich  :-> (15, Blaxhall))
-        --                     ,(Feering  :-> (46, Blaxhall))
-        --                     ,(Harwich  :-> (40, Blaxhall))]
+        it "from start node to neighbors is weight" $ do
+            let (dists,p) = (distances rs Blaxhall (initial rs Blaxhall,[]))
+            head p `shouldBe` (Blaxhall,(0,Blaxhall))
+            toList dists `shouldBe` [Clacton :-> (10000,Clacton)
+                                    ,Dunwich :-> (15,Blaxhall)
+                                    ,Feering :-> (46,Blaxhall)
+                                    ,Harwich :-> (40,Blaxhall)
+                                    ,Maldon  :-> (10000,Maldon)
+                                    ,Tiptree :-> (10000,Tiptree)]
 
+        it "from start node to neighbors' neighbors is cumulated weight" $ do
+            let (dists,p) = (distances rs Blaxhall (distances rs Blaxhall (initial rs Blaxhall,[])))
+            head p `shouldBe`(Dunwich,(15,Blaxhall))
+            toList dists `shouldBe` [Clacton :-> (10000,Clacton)
+                                    ,Feering :-> (46,Blaxhall)
+                                    ,Harwich :-> (40,Blaxhall)
+                                    ,Maldon :-> (10000,Maldon)
+                                    ,Tiptree :-> (10000,Tiptree)]
+
+            let (dists,p) = (distances rs Blaxhall (distances rs Blaxhall (distances rs Blaxhall (initial rs Blaxhall,[]))))
+            head p `shouldBe`(Harwich,(40,Blaxhall))
+            toList dists `shouldBe` [Clacton :-> (57,Harwich)
+                                    ,Feering :-> (46,Blaxhall)
+                                    ,Maldon :-> (10000,Maldon)
+                                    ,Tiptree :-> (10000,Tiptree)]
+
+
+            let (dists,p) = (distances rs Blaxhall (distances rs Blaxhall (distances rs Blaxhall (distances rs Blaxhall (initial rs Blaxhall,[])))))
+            head p `shouldBe` (Feering,(46,Blaxhall))
+            toList dists `shouldBe` [Clacton :-> (57,Harwich)
+                                    ,Maldon :-> (57,Feering)
+                                    ,Tiptree :-> (49,Feering)]
+
+            let p = allDistances rs Blaxhall 
+            p  `shouldBe` [(Clacton,(57,Harwich))
+                              ,(Maldon,(57,Feering))
+                              ,(Tiptree,(49,Feering))
+                              ,(Feering,(46,Blaxhall))
+                              ,(Harwich,(40,Blaxhall))
+                              ,(Dunwich,(15,Blaxhall))
+                              ,(Blaxhall,(0,Blaxhall))]
