@@ -6,11 +6,14 @@ type Graph k w = [(k,[(k,w)])]
 type Path  k w = [(k,(w,k))]
 type Dists k w = PSQ k (w,k)
 
-shortestPath :: (Ord k, Ord w, Num w) => Graph k w -> k -> k -> Path k w
-shortestPath _ a z | a == z = [(z,(0,a))]
-shortestPath g a z = case lookup a g >>= lookup z of
-    Nothing -> []
-    Just w  -> [(z,(w,a))]
+shortestPath :: (Ord k, Ord w, Num w) => Graph k w -> k -> k -> [(w,k)]
+shortestPath g a z = reverse (pathTo z (allDistances g a))
+
+pathTo :: (Ord k, Ord w, Num w) => k -> Path k w -> [(w,k)]
+pathTo k ps = case lookup k ps of
+    Nothing    -> error "node not found"
+    Just (w,j) -> (w,k) : if j /= k then pathTo j ps else []
+
 
 allDistances :: (Ord k, Ord w, Num w) => Graph k w -> k -> Path k w
 allDistances g k = snd (loop ((initial g k),[]))
@@ -33,4 +36,4 @@ initial :: (Ord k, Ord w, Num w) => Graph k w -> k -> Dists k w
 initial g k = adjust (const (0,k)) k
     (fromList (map (\(n,_) -> n :->(10000,n)) g))
 
--                             
+                             

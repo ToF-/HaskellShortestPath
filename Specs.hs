@@ -11,11 +11,15 @@ main = hspec $ do
     describe "shortestPath" $ do
         it "from a node to itself is a one step path" $ do
             shortestPath rs Blaxhall Blaxhall 
-                `shouldBe` [(Blaxhall,(0,Blaxhall))]
+                `shouldBe` [(0,Blaxhall)]
 
         it "form a node to a neighbor is the weight of the edge" $ do
             shortestPath rs Blaxhall Dunwich
-                `shouldBe` [(Dunwich,(15,Blaxhall))]
+                `shouldBe` [(0,Blaxhall),(15,Dunwich)]
+
+        it "form a node to a neighbor's enighbort is the cumulated weight of edges" $ do
+            shortestPath rs Blaxhall Tiptree
+                `shouldBe` [(0,Blaxhall),(46,Feering),(49,Tiptree)]
 
     describe "distances" $ do
         it "from start node to itself is 0" $ do
@@ -46,7 +50,7 @@ main = hspec $ do
             toList dists `shouldBe` [Clacton :-> (57,Harwich)
                                     ,Feering :-> (46,Blaxhall)
                                     ,Maldon :-> (10000,Maldon)
-                                    ,Tiptree :-> (10000,Tiptree)]
+                                    ,Tiptree :-> (71,Harwich)]
 
 
             let (dists,p) = (distances rs Blaxhall (distances rs Blaxhall (distances rs Blaxhall (distances rs Blaxhall (initial rs Blaxhall,[])))))
