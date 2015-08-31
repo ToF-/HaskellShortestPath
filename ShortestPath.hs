@@ -6,7 +6,10 @@ type Graph k w = [(k,[(k,w)])]
 type Path k w = [(k,(w,k))]
 
 shortestPath :: (Ord k, Ord w, Num w) => Graph k w -> k -> k -> Path k w
-shortestPath _ a z = [(z,(0,a))]
+shortestPath _ a z | a == z = [(z,(0,a))]
+shortestPath g a z = case lookup a g >>= lookup z of
+    Nothing -> []
+    Just w  -> [(z,(w,a))]
 
 -- data Step k w = Step k w k deriving (Eq,Show)
 -- data Path k w = Path [Step k w] deriving (Eq,Show)
