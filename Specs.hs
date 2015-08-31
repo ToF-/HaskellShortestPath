@@ -24,46 +24,46 @@ main = hspec $ do
     describe "distances" $ do
         it "from start node to itself is 0" $ do
             let (dists,_) = (initial rs Blaxhall, [])
-            head (toList dists) `shouldBe` (Blaxhall :-> (0,Blaxhall))
+            head (toList dists) `shouldBe` (Blaxhall :-> (0,Nothing))
 
         it "from start node to neighbors is weight" $ do
             let (dists,p) = (distances rs Blaxhall (initial rs Blaxhall,[]))
-            head p `shouldBe` (Blaxhall,(0,Blaxhall))
-            toList dists `shouldBe` [Clacton :-> (10000,Clacton)
-                                    ,Dunwich :-> (15,Blaxhall)
-                                    ,Feering :-> (46,Blaxhall)
-                                    ,Harwich :-> (40,Blaxhall)
-                                    ,Maldon  :-> (10000,Maldon)
-                                    ,Tiptree :-> (10000,Tiptree)]
+            head p `shouldBe` (Blaxhall,(0,Nothing))
+            toList dists `shouldBe` [Clacton :-> (10000,Nothing)
+                                    ,Dunwich :-> (15,Just Blaxhall)
+                                    ,Feering :-> (46,Just Blaxhall)
+                                    ,Harwich :-> (40,Just Blaxhall)
+                                    ,Maldon  :-> (10000,Nothing)
+                                    ,Tiptree :-> (10000,Nothing)]
 
         it "from start node to neighbors' neighbors is cumulated weight" $ do
             let (dists,p) = (distances rs Blaxhall (distances rs Blaxhall (initial rs Blaxhall,[])))
-            head p `shouldBe`(Dunwich,(15,Blaxhall))
-            toList dists `shouldBe` [Clacton :-> (10000,Clacton)
-                                    ,Feering :-> (46,Blaxhall)
-                                    ,Harwich :-> (40,Blaxhall)
-                                    ,Maldon :-> (10000,Maldon)
-                                    ,Tiptree :-> (10000,Tiptree)]
+            head p `shouldBe`(Dunwich,(15,Just Blaxhall))
+            toList dists `shouldBe` [Clacton :-> (10000,Nothing)
+                                    ,Feering :-> (46,Just Blaxhall)
+                                    ,Harwich :-> (40,Just Blaxhall)
+                                    ,Maldon :-> (10000,Nothing)
+                                    ,Tiptree :-> (10000,Nothing)]
 
             let (dists,p) = (distances rs Blaxhall (distances rs Blaxhall (distances rs Blaxhall (initial rs Blaxhall,[]))))
-            head p `shouldBe`(Harwich,(40,Blaxhall))
-            toList dists `shouldBe` [Clacton :-> (57,Harwich)
-                                    ,Feering :-> (46,Blaxhall)
-                                    ,Maldon :-> (10000,Maldon)
-                                    ,Tiptree :-> (71,Harwich)]
+            head p `shouldBe`(Harwich,(40,Just Blaxhall))
+            toList dists `shouldBe` [Clacton :-> (57,Just Harwich)
+                                    ,Feering :-> (46,Just Blaxhall)
+                                    ,Maldon :-> (10000,Nothing)
+                                    ,Tiptree :-> (71,Just Harwich)]
 
 
             let (dists,p) = (distances rs Blaxhall (distances rs Blaxhall (distances rs Blaxhall (distances rs Blaxhall (initial rs Blaxhall,[])))))
-            head p `shouldBe` (Feering,(46,Blaxhall))
-            toList dists `shouldBe` [Clacton :-> (57,Harwich)
-                                    ,Maldon :-> (57,Feering)
-                                    ,Tiptree :-> (49,Feering)]
+            head p `shouldBe` (Feering,(46,Just Blaxhall))
+            toList dists `shouldBe` [Clacton :-> (57,Just Harwich)
+                                    ,Maldon :-> (57,Just Feering)
+                                    ,Tiptree :-> (49,Just Feering)]
 
             let p = allDistances rs Blaxhall 
-            p  `shouldBe` [(Clacton,(57,Harwich))
-                              ,(Maldon,(57,Feering))
-                              ,(Tiptree,(49,Feering))
-                              ,(Feering,(46,Blaxhall))
-                              ,(Harwich,(40,Blaxhall))
-                              ,(Dunwich,(15,Blaxhall))
-                              ,(Blaxhall,(0,Blaxhall))]
+            p  `shouldBe` [(Clacton,(57,Just Harwich))
+                              ,(Maldon,(57,Just Feering))
+                              ,(Tiptree,(49,Just Feering))
+                              ,(Feering,(46,Just Blaxhall))
+                              ,(Harwich,(40,Just Blaxhall))
+                              ,(Dunwich,(15,Just Blaxhall))
+                              ,(Blaxhall,(0,Nothing))]

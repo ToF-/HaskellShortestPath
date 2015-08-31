@@ -3,17 +3,16 @@ where
 import Data.PSQueue (PSQ, adjust, fromList, Binding((:->)), minView, null)
 
 type Graph k w = [(k,[(k,w)])]
-type Path  k w = [(k,(w,k))]
-type Dists k w = PSQ k (w,k)
+type Path  k w = [(k,(w,Maybe k))]
+type Dists k w = PSQ k (w,Maybe k)
 
 shortestPath :: (Ord k, Ord w, Num w) => Graph k w -> k -> k -> [(w,k)]
-shortestPath g a z = reverse (pathTo z (allDistances g a))
+shortestPath g a z = reverse (pathTo (Just z) (allDistances g a))
 
-pathTo :: (Ord k, Ord w, Num w) => k -> Path k w -> [(w,k)]
-pathTo k ps = case lookup k ps of
-    Nothing    -> error "node not found"
-    Just (w,j) -> (w,k) : if j /= k then pathTo j ps else []
-
+pathTo :: (Ord k, Ord w, Num w) => Maybe k -> Path k w -> [(w,k)]
+pathTo Nothing     _ = []
+pathTo (Just k) ps = (w,k) : pathTo j ps
+    where Just (w,j) = lookup k ps
 
 allDistances :: (Ord k, Ord w, Num w) => Graph k w -> k -> Path k w
 allDistances g k = snd (loop ((initial g k),[]))
@@ -30,10 +29,10 @@ step :: (Ord k, Ord w, Num w) => Dists k w -> Maybe [(k,w)] -> k -> w -> Dists k
 step ds Nothing _ _ = ds
 step ds (Just adjs) n0 w0 = foldl update ds adjs
     where
-    update ds (k,w) = adjust (min (w0+w,n0)) k ds 
+    update ds (k,w) = adjust (min (w0+w,Just n0)) k ds 
 
 initial :: (Ord k, Ord w, Num w) => Graph k w -> k -> Dists k w
-initial g k = adjust (const (0,k)) k
-    (fromList (map (\(n,_) -> n :->(10000,n)) g))
+initial g k = adjust (const (0,Nothing)) k
+    (fromList (map (\(n,_) -> n :->(10000,Nothing)) g))
 
                              
