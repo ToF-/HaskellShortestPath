@@ -16,6 +16,7 @@ pathTo (Just k) ps = (w,k) : pathTo j ps
 
 allDistances :: (Ord k, Ord w, Num w) => Graph k w -> k -> Path k w
 allDistances g k = snd (loop ((initial g k),[]))
+snd (iterate (distances g k) (initial g g))
     where
     loop (ds,p) | Data.PSQueue.null ds = (ds,p)
                 | otherwise   = loop (distances g k (ds,p))
