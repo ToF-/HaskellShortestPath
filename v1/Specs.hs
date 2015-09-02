@@ -6,6 +6,11 @@ data City = A | B | C | D | E deriving (Eq,Ord,Show)
 
 
 main = hspec $ do
+    let g = [(A,[(B,3),(C,5)])
+            ,(B,[(A,3),(D,4)])
+            ,(C,[(A,5)])
+            ,(D,[(B,4),(E,2)])
+            ,(E,[(D,2)])] :: Graph City Integer
     describe "list of distances from a node" $ do
         describe "allows for computing the path" $ do
             let dists = [(A,(0, Nothing))
@@ -25,12 +30,7 @@ main = hspec $ do
 
     describe "a priority queue for distances and a graph" $ do
         describe "allow for computing the next distance" $ do
-            let g = [(A,[(B,3),(C,5)])
-                    ,(B,[(A,3),(D,4)])
-                    ,(C,[(A,5)])
-                    ,(D,[(B,4),(E,2)])
-                    ,(E,[(D,2)])] :: Graph City Integer
-                q = fromList [A :-> (10000, Nothing)
+            let q = fromList [A :-> (10000, Nothing)
                              ,B :-> (10000, Nothing) 
                              ,C :-> (0,     Nothing)
                              ,D :-> (10000, Nothing)
@@ -57,17 +57,19 @@ main = hspec $ do
     
     describe "a graph" $ do
         it "can be converted in a distance table from a node" $ do
-            let g = [(A,[(B,3),(C,5)])
-                    ,(B,[(A,3),(D,4)])
-                    ,(C,[(A,5)])
-                    ,(D,[(B,4),(E,2)])
-                    ,(E,[(D,2)])] :: Graph City Integer
             let d = allDistances g C
             d  `shouldBe` [(E,(14,Just D))
                           ,(D,(12,Just B))
                           ,(B,(8,Just A))
                           ,(A,(5,Just C))
-                          ,(C,(0,Nothing))] []
+                          ,(C,(0,Nothing))]
+
+    describe "shortestPath" $ do
+        it "finds the shortest path from a node to another" $ do
+            shortestPath g A E `shouldBe` [(A,0),(B,3),(D,7),(E,9)]
+            shortestPath g C E `shouldBe` [(C,0),(A,5),(B,8),(D,12),(E,14)]
+            shortestPath g B C `shouldBe` [(B,0),(A,3),(C,8)]
+        
         
    
 
