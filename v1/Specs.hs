@@ -54,5 +54,20 @@ main = hspec $ do
                     [B :-> (8,Just A)
                     ,D :-> (10000,Nothing)
                     ,E :-> (10000,Nothing)]
+    
+    describe "a graph" $ do
+        it "can be converted in a distance table from a node" $ do
+            let g = [(A,[(B,3),(C,5)])
+                    ,(B,[(A,3),(D,4)])
+                    ,(C,[(A,5)])
+                    ,(D,[(B,4),(E,2)])
+                    ,(E,[(D,2)])] :: Graph City Integer
+            let d = allDistances g C
+            d  `shouldBe` [(E,(14,Just D))
+                          ,(D,(12,Just B))
+                          ,(B,(8,Just A))
+                          ,(A,(5,Just C))
+                          ,(C,(0,Nothing))] []
+        
    
 

@@ -28,4 +28,14 @@ adjustDistance :: (Ord n, Ord w, Num w) =>
     Edge n w -> PSQ n (w,Maybe n) -> Edge n w -> PSQ n (w,Maybe n)
 adjustDistance (n0,w0) q (n1,w1) = adjust (min (w0+w1, Just n0)) n1 q
 
+allDistances :: (Ord n,Num w,Ord w) 
+ => Graph n w -> n -> [Distance n w]
+allDistances g a = snd (allDistances' initialDistances)
+    where
+    allDistances' (q,d) | Data.PSQueue.null q    = (q,d) 
+                        | otherwise = allDistances' (nextDistance g (q,d))
+
+    initialDistances = (adjust (const (0, Nothing)) a
+        (fromList (map (\(n,_) -> n :-> (10000,Nothing)) g)),[])
+
 
