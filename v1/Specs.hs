@@ -1,5 +1,6 @@
 import Test.Hspec
 import ShortestPath
+import Data.PSQueue
 
 data City = A | B | C | D | E deriving (Eq,Ord,Show)
 
@@ -19,6 +20,29 @@ main = hspec $ do
             it "to the next node" $ do
                 pathTo B dists `shouldBe` [(A,0),(B,3)]
 
-        
             it "to any node" $ do
                 pathTo E dists  `shouldBe` [(A,0),(B,3),(D,7),(E,9)]
+
+    describe "a priority queue for distances and a graph" $ do
+        describe "allow for computing the next distance" $ do
+            let g = [(A,[(B,3),(C,5)])
+                    ,(B,[(A,3),(D,4)])
+                    ,(C,[(A,5)])
+                    ,(D,[(B,4),(E,2)])
+                    ,(E,[(D,2)])]
+                q = fromList [A :-> (10000, Nothing)
+                             ,B :-> (10000, Nothing) 
+                             ,C :-> (0,     Nothing)
+                             ,D :-> (10000, Nothing)
+                             ,E :-> (10000, Nothing)]
+                d = []
+
+            it "when there is only one distance known" $ do
+                let (q',d') = nextDistance g (q,d)
+                d' `shouldBe` [(C,(0, Nothing))]
+
+
+        
+
+
+
