@@ -17,12 +17,12 @@ nextDistance :: (Ord w, Eq n, Ord n, Num w)
  => Graph n w -> Table n w -> Table n w
 nextDistance g (q,d) = case minView q of
     Nothing -> (q,d)
-    Just (n :-> (w,m),q') -> (updateDistances q' g n w,[(n,(w,m))])
+    Just (n :-> (w,m),q') -> (updateDistances q' g n w,(n,(w,m)):d)
 
 updateDistances :: (Ord n, Ord w, Num w) => PSQ n (w,Maybe n) -> Graph n w -> n -> w -> PSQ n (w,Maybe n) 
 updateDistances q g n w = case Prelude.lookup n g of
     Nothing -> q
-    Just [adj] -> adjustDistance (n,w) q adj
+    Just adjs -> Prelude.foldl (adjustDistance (n,w)) q adjs
 
 adjustDistance :: (Ord n, Ord w, Num w) => 
     Edge n w -> PSQ n (w,Maybe n) -> Edge n w -> PSQ n (w,Maybe n)

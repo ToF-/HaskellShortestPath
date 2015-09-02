@@ -40,7 +40,6 @@ main = hspec $ do
             it "when there is only one distance known" $ do
                 let (q',d') = nextDistance g (q,d)
                 d' `shouldBe` [(C,(0, Nothing))]
- 
                 toList q' `shouldBe`
                     [A :-> (5,Just C)
                     ,B :-> (10000,Nothing)
@@ -48,7 +47,12 @@ main = hspec $ do
                     ,E :-> (10000,Nothing)]
 
 
---             it "when there are several distances known" $ do
---                 let (q',d') = nextdistance g (nextDistance g (q,d))
---     
+            it "when there are several distances known" $ do
+                let (q',d') = nextDistance g (nextDistance g (q,d))
+                d' `shouldBe` [(A,(5, Just C)),(C,(0, Nothing))]
+                toList q' `shouldBe`
+                    [B :-> (8,Just A)
+                    ,D :-> (10000,Nothing)
+                    ,E :-> (10000,Nothing)]
+   
 
