@@ -1,7 +1,9 @@
 module ShortestPath
 where
 
-pathTo :: (Eq n) => n -> [(n,(w,Maybe n))] -> [(n,w)]
+type Distance n w = (n,(w,Maybe n))
+
+pathTo :: (Eq n) => n -> [Distance n w] -> [(n,w)]
 pathTo n dists = case lookup n dists of 
     Nothing -> error "node not in distance list"
     Just (w,Nothing) -> [(n,w)]
