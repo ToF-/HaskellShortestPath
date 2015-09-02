@@ -29,20 +29,26 @@ main = hspec $ do
                     ,(B,[(A,3),(D,4)])
                     ,(C,[(A,5)])
                     ,(D,[(B,4),(E,2)])
-                    ,(E,[(D,2)])]
+                    ,(E,[(D,2)])] :: Graph City Integer
                 q = fromList [A :-> (10000, Nothing)
                              ,B :-> (10000, Nothing) 
                              ,C :-> (0,     Nothing)
                              ,D :-> (10000, Nothing)
                              ,E :-> (10000, Nothing)]
-                d = []
+                d = [] :: [Distance City Integer]
 
             it "when there is only one distance known" $ do
                 let (q',d') = nextDistance g (q,d)
                 d' `shouldBe` [(C,(0, Nothing))]
+ 
+                toList q' `shouldBe`
+                    [A :-> (5,Just C)
+                    ,B :-> (10000,Nothing)
+                    ,D :-> (10000,Nothing)
+                    ,E :-> (10000,Nothing)]
 
 
-        
-
-
+--             it "when there are several distances known" $ do
+--                 let (q',d') = nextdistance g (nextDistance g (q,d))
+--     
 
