@@ -38,4 +38,6 @@ allDistances g a = snd (allDistances' initialDistances)
     initialDistances = (adjust (const (0, Nothing)) a
         (fromList (map (\(n,_) -> n :-> (10000,Nothing)) g)),[])
 
-
+shortestPath :: (Ord n, Num w, Ord w)
+ => Graph n w -> n -> n -> [(n,w)]
+shortestPath g a z = pathTo z (allDistances g a)
