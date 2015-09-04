@@ -27,7 +27,12 @@ main = hspec $ do
             `shouldBe` [A :-> (0, Nothing)
                        ,B :-> (10000, Nothing)
                        ,C :-> (10000, Nothing)]
-                                
-        
 
+        it "is updated by computing next distance" $ do
+            let g = [(A,[(B,2)])
+                    ,(B,[(A,2),(C,3)])
+                    ,(C,[(B,3)])]
+                t = (initialDistances A g, [])
+                (q,d) = nextDistances t
+            d  `shouldBe` [(A,(0,Nothing))]
 
