@@ -3,6 +3,9 @@ import ShortestPath
 import Data.PSQueue
 
 
+data City = A|B|C|D deriving (Eq,Ord,Show)
+
+
 main = hspec $ do
     let g = [(A,[(B,2),(C,3)])
             ,(B,[(A,2),(C,4)])
