@@ -8,5 +8,5 @@ shortest path in 8 steps:
 - updating the PSQ with new distance - case of the line path
 - updating the PSQ with several new distances - case of the diamond path
 - reducing the PSQ
-- done
+- extending to any Ord n, Ord w, Num w
 
