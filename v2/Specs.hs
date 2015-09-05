@@ -1,30 +1,12 @@
 import Test.Hspec
 import ShortestPath
-import Data.PSQueue
 
+data City = A | B | C | D
+    deriving (Eq, Ord, Show)
 
 main = hspec $ do
-    let g = [(A,[(B,2),(C,3)])
-            ,(B,[(A,2),(C,4)])
-            ,(C,[(A,3),(B,4)])]
     describe "a graph" $ do
-        it "contains nodes and their adjacent nodes" $ do
-            adjacentNodes B g  `shouldBe` [(A,2),(C,4)]
-
-    describe "a distance list" $ do
-        it "allows for generating a path" $ do
-            let d = [(A,(0, Nothing))
-                    ,(B,(2, Just A))
-                    ,(C,(6, Just B))]
-            pathTo C d `shouldBe` [(0,A),(2,B),(6,C)]
-
-    describe "a distance queue to a node" $ do
-        it "contains initially infinite distances except node" $ do
-            toList (initialDistances A g)
-            `shouldBe` [A :-> (0, Nothing)
-                       ,B :-> (10000, Nothing)
-                       ,C :-> (10000, Nothing)]
-                                
-        
-
-
+        it "allows for adjacent nodes to a node" $ do
+            let g = fromList [(A,3,B),(B,2,C),(A,4,C),(C,1,D)]
+            adjacentNodes A g  `shouldBe` [(B,3),(C,4)]
+            adjacentNodes B g  `shouldBe` [(A,3),(C,2)]

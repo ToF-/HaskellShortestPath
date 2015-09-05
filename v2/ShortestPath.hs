@@ -1,17 +1,23 @@
 module ShortestPath
 where
 import Data.Maybe
-import Data.PSQueue as Q (Binding((:->)), fromList, PSQ, adjust)
+import Data.List (sort, groupBy)
 
-data City = A|B|C|D deriving (Eq,Ord,Show)
+type Node a = a
+type Adjacent a = (Node a, Integer)
+type Graph a = [(Node a,[Adjacent a])]
 
-adjacentNodes n = fromJust . lookup n
+adjacentNodes :: Eq a => Node a -> Graph a -> [Adjacent a]
+adjacentNodes n g = fromJust (lookup n g)
 
-pathTo n d = case fromJust (lookup n d) of
-    (w,Nothing) -> [(w,n)]
-    (w,Just m)  -> pathTo m d ++ [(w,n)]
-
-initialDistances :: City -> [(City,[(City,Integer)])] -> PSQ City (Integer,Maybe City)
-initialDistances n g = adjust (const (0,Nothing)) n (fromList (map infinite g))
+fromList :: (Eq a, Ord a) => [(Node a,Integer,Node a)] -> Graph a
+fromList = map associate . groupBy (same fst) . sort . concat . map adjacents
     where
-    infinite (n,_) = n :-> (10000,Nothing)
+    adjacents :: (Node a,Integer,Node a) -> [(Node a,(Adjacent a))]
+    adjacents (a,d,b) = [(a,(b,d)),(b,(a,d))]
+
+    same :: Eq b => (a -> b) -> a -> a -> Bool
+    same f x y = f x == f y 
+
+    associate :: [(Node a,Adjacent a)] -> (Node a,[Adjacent a])
+    associate xs = (fst (head xs),map snd xs)
