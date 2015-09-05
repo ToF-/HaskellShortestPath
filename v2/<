@@ -2,14 +2,13 @@ module ShortestPath
 where
 import Data.Maybe
 import Data.List (sort, groupBy)
-import Data.PSQueue as Q (PSQ, adjust, Binding ((:->)), insert, empty, minView, key, prio)
+import Data.PSQueue as Q (PSQ, adjust, Binding ((:->)), insert, empty)
 
 type Node a = a
 type Adjacent a = (Node a, Integer)
 type Graph a = [(Node a,[Adjacent a])]
 type Distance a = (Integer, Maybe a)
 type Queue a = Q.PSQ a (Distance a)
-type DistanceTable a = [(Node a,Distance a)]
 
 adjacentNodes :: Eq a => Node a -> Graph a -> [Adjacent a]
 adjacentNodes n g = fromJust (lookup n g)
@@ -31,10 +30,4 @@ initialDistances a g = foldr insert Q.empty (map fst g)
     where
     insert x = Q.insert x (if x == a then 0 else 10000, Nothing)
 
-nextDistances :: (Eq a, Ord a) => Graph a -> (Queue a,DistanceTable a) -> (Queue a,DistanceTable a)
-nextDistances g (q,l) = case minView q of
-    Nothing     -> (q,l)
-    Just (n :-> (d,m),q') -> (foldl adjustDistance q' (adjacentNodes n g),(n,(d,m)):l)
-        where
-        adjustDistance q (n',d') = adjust (min (d+d',Just n)) n' q 
-                        
+nextDistances :: (Eq a, Ord a) => Graph a -> (Queue a,[Distance a]) -> (Queue a,[Distance a])
