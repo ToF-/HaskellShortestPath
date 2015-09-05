@@ -1,38 +1,23 @@
 import Test.Hspec
 import ShortestPath
-import Data.PSQueue
+import Data.PSQueue as Q (toList, Binding((:->)))
 
-
-data City = A|B|C|D deriving (Eq,Ord,Show)
+data City = A | B | C | D
+    deriving (Eq, Ord, Show)
 
 
 main = hspec $ do
-    let g = [(A,[(B,2),(C,3)])
-            ,(B,[(A,2),(C,4)])
-            ,(C,[(A,3),(B,4)])]
+    let g = fromList [(A,3,B),(B,2,C),(A,4,C),(C,1,D)]
+
     describe "a graph" $ do
-        it "contains nodes and their adjacent nodes" $ do
-            adjacentNodes B g  `shouldBe` [(A,2),(C,4)]
+        it "allows for adjacent nodes to a node" $ do
+            adjacentNodes A g  `shouldBe` [(B,3),(C,4)]
+            adjacentNodes B g  `shouldBe` [(A,3),(C,2)]
 
-    describe "a distance list" $ do
-        it "allows for generating a path" $ do
-            let d = [(A,(0, Nothing))
-                    ,(B,(2, Just A))
-                    ,(C,(6, Just B))]
-            pathTo C d `shouldBe` [(0,A),(2,B),(6,C)]
-
-    describe "a distance queue to a node" $ do
-        it "contains initially infinite distances except node" $ do
-            toList (initialDistances A g)
-            `shouldBe` [A :-> (0, Nothing)
-                       ,B :-> (10000, Nothing)
-                       ,C :-> (10000, Nothing)]
-
-        it "is updated by computing next distance" $ do
-            let g = [(A,[(B,2)])
-                    ,(B,[(A,2),(C,3)])
-                    ,(C,[(B,3)])]
-                t = (initialDistances A g, [])
-                (q,d) = nextDistances t
-            d  `shouldBe` [(A,(0,Nothing))]
-
+    describe "a distance queue" $ do
+        it "is initialized with a graph for a given node" $ do
+            let q = initialDistances A g
+            Q.toList q `shouldBe` [A :-> (0, Nothing)
+                                  ,B :-> (10000, Nothing)
+                                  ,C :-> (10000, Nothing)
+                                  ,D :-> (10000, Nothing)]

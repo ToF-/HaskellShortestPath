@@ -1,24 +1,30 @@
 module ShortestPath
 where
 import Data.Maybe
-import Data.PSQueue as Q (Binding((:->)), fromList, PSQ, adjust, minView)
+import Data.List (sort, groupBy)
+import Data.PSQueue as Q (PSQ, adjust, Binding ((:->)), insert, empty)
 
-type Graph n = [(n,[(n,Integer)])]
-type Queue n = PSQ n (Integer,Maybe n)
-type Table n = (Queue n,[(n,(Integer,Maybe n))])
+type Node a = a
+type Adjacent a = (Node a, Integer)
+type Graph a = [(Node a,[Adjacent a])]
+type Queue a = Q.PSQ a (Integer,Maybe a)
 
-adjacentNodes n = fromJust . lookup n
+adjacentNodes :: Eq a => Node a -> Graph a -> [Adjacent a]
+adjacentNodes n g = fromJust (lookup n g)
 
-pathTo n d = case fromJust (lookup n d) of
-    (w,Nothing) -> [(w,n)]
-    (w,Just m)  -> pathTo m d ++ [(w,n)]
-
-initialDistances :: (Eq n, Ord n) => n -> Graph n -> Queue n
-initialDistances n g = adjust (const (0,Nothing)) n (fromList (map infinite g))
+fromList :: (Eq a, Ord a) => [(Node a,Integer,Node a)] -> Graph a
+fromList = map associate . groupBy (same fst) . sort . concat . map adjacents
     where
-    infinite (n,_) = n :-> (10000,Nothing)
+    adjacents :: (Node a,Integer,Node a) -> [(Node a,(Adjacent a))]
+    adjacents (a,d,b) = [(a,(b,d)),(b,(a,d))]
 
-nextDistances :: (Eq n, Ord n) => Table n -> Table n
-nextDistances (q,l) = case minView q of
-    Nothing -> (q,l)
-    Just (n :-> (w,m),q') -> (q',[(n,(w,m))])
+    same :: Eq b => (a -> b) -> a -> a -> Bool
+    same f x y = f x == f y 
+
+    associate :: [(Node a,Adjacent a)] -> (Node a,[Adjacent a])
+    associate xs = (fst (head xs),map snd xs)
+
+initialDistances :: (Eq a, Ord a) => Node a -> Graph a -> Queue a
+initialDistances a g = foldr insert Q.empty (map fst g)
+    where
+    insert x = Q.insert x (if x == a then 0 else 10000, Nothing)
