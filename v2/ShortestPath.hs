@@ -2,7 +2,7 @@ module ShortestPath
 where
 import Data.Maybe
 import Data.List (sort, groupBy)
-import Data.PSQueue as Q (PSQ, adjust, Binding ((:->)), insert, empty, minView, key, prio)
+import Data.PSQueue as Q (PSQ, adjust, Binding ((:->)), insert, empty, minView, null)
 
 type Node a = a
 type Adjacent a = (Node a, Integer)
@@ -38,3 +38,5 @@ nextDistances g (q,l) = case minView q of
         where
         adjustDistance q (n',d') = adjust (min (d+d',Just n)) n' q 
                         
+allDistances :: (Eq a, Ord a) => Node a -> Graph a -> DistanceTable a
+allDistances n g = snd (until (Q.null . fst) (nextDistances g) (initialDistances n g,[]))

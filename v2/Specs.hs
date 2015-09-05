@@ -35,4 +35,9 @@ main = hspec $ do
 
             let (q,l) = ndg (ndg (ndg (initialDistances A g,[])))
             Q.toList q `shouldBe` [D :-> (6, Just C)]
-            
+
+        it "can be calculated until the distance list is complete" $ do 
+            allDistances A g `shouldBe` [(D,(6,Just C))
+                                        ,(C,(5,Just B))
+                                        ,(B,(3,Just A))
+                                        ,(A,(0,Nothing))]
