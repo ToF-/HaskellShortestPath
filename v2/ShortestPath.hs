@@ -40,3 +40,10 @@ nextDistances g (q,l) = case minView q of
                         
 allDistances :: (Eq a, Ord a) => Node a -> Graph a -> DistanceTable a
 allDistances n g = snd (until (Q.null . fst) (nextDistances g) (initialDistances n g,[]))
+
+distances :: (Eq a, Ord a) => Node a -> Node a -> Graph a -> DistanceTable a
+distances n m g = snd (until foundNode (nextDistances g) (initialDistances n g,[]))
+    where
+    foundNode (_,[])        = False
+    foundNode (_,((x,_):_)) = x == m 
+    

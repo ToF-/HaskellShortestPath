@@ -41,3 +41,8 @@ main = hspec $ do
                                         ,(C,(5,Just B))
                                         ,(B,(3,Just A))
                                         ,(A,(0,Nothing))]
+
+        it "can be caculated until the distance to end node is found" $ do
+            distances A C g `shouldBe` [(C,(5, Just B))
+                                      ,(B,(3, Just A))
+                                      ,(A,(0, Nothing))]
